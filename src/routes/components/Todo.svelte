@@ -1,17 +1,35 @@
 <script>
   import TodoElement from './TodoElement.svelte';
-  import { todoList } from './store.js';
+  import { todoList } from '../stores/store.js';
 
   let newItem = '';
 
   function addTodo() {
     todoList.update((list) => [...list, { text: newItem, done: false }]);
     newItem = '';
+    sortTodo();
+  }
+
+  function handleKeydown(event) {
+    if (event.key === 'Enter') {
+      addTodo();
+    }
+  }
+
+  function sortTodo() {
+    todoList.update((list) => {
+      return list.slice().sort((a, b) => a.done - b.done);
+    });
   }
 </script>
 
 <section class="form_for_items">
-  <input bind:value={newItem} type="text" placeholder="new todo item" />
+  <input
+    on:keydown={handleKeydown}
+    bind:value={newItem}
+    type="text"
+    placeholder="new todo item"
+  />
   <button on:click={addTodo}>add item</button>
 </section>
 
@@ -28,7 +46,8 @@
   }
 
   .list {
-    display: block;
+    display: flex;
+    flex-direction: column;
   }
 
   button {
@@ -51,5 +70,11 @@
   input {
     border-radius: 10px;
     padding: 5px;
+    border: 2px solid black;
+  }
+
+  input:hover {
+    border: 2px solid rgb(108, 56, 91);
+    transition: 0.5s;
   }
 </style>
